@@ -1,0 +1,22 @@
+#! /bin/sh
+
+set -eu
+
+awkprog='
+  {
+    line = $0
+    sum = $1
+    $1 = ""
+    if (sum == prev) {
+      printf("\t %s\n", $0)
+    } else {
+      prev = sum
+    }
+  }
+'
+
+find "$@" -type f -print \
+  | xargs shasum -b -a 256 \
+  | sort \
+  | awk "$awkprog" \
+
